@@ -1,6 +1,6 @@
 # Rhino の練習
 
-[Rhino](https://appsilon.github.io/rhino/index.html) による Shiny アプリ開発の学習用リポジトリ。
+[Rhino](https://appsilon.github.io/rhino/index.html) による Shiny アプリ開発の学習用リポジトリ。検証コード、ドキュメントの私的和訳、メモなど。
 
 ## Rhino とは
 
