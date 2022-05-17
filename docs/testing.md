@@ -1,16 +1,17 @@
 # テストについて
 
-## Rの単体テスト
+## R の単体テスト
 
 [`rhino::test_r()`](https://appsilon.github.io/rhino/reference/test_r.html) で `tests/testthat/` ディレクトリ内のユニットテストをすべて実行する。
 
 **補足**
 [`testthat`](https://testthat.r-lib.org/) はパッケージ開発を前提としているが、パッケージ開発でなくても [`testthat::test_dir`](https://testthat.r-lib.org/reference/test_dir.html) でテストを実行することは可能。`rhino::test_r` はその単純なラッパーになっている。
 
-## E2Eテスト
+## box モジュールとテストについて
 
-[`rhino::test_e2e()`](https://appsilon.github.io/rhino/reference/test_e2e.html) で
-Cypress による E2E テストを実行する。
+（調査中）
+
+参考: [Testing modules • box](https://klmr.me/box/articles/testing.html)
 
 ## testServer について
 
@@ -78,6 +79,70 @@ testServer(myModuleServer, args = list(multiplier = 2), {
 > Test code containing expectations. The objects from inside the server function environment will be made available in the environment of the test expression (this is done using a data mask with rlang::eval_tidy()). This includes the parameters of the server function (e.g. input, output, and session), along with any other values created inside of the server function.
 
 期待する挙動が書かれたテストコード。サーバー関数の環境中にあるオブジェクトはこのテスト式の環境で使えるようになる（これは `rlang::eval_tidy()` によるデータマスクを使って実現されている）。これにはサーバー関数の引数（input、output、session など）や、サーバー関数内で作成されたその他の値が含まれる。
+
+## 実験
+
+[チュートリアル](./tutorial.md) で作成したメインモジュール
+
+📄 `app/main.R`
+
+```r
+box::use(
+  shiny[bootstrapPage, moduleServer, NS, div, h1, tags, icon],
+)
+
+box::use(
+  app/view/table,
+  app/view/chart,
+)
+
+# ...(中略)...
+
+#' @export
+server <- function(id) {
+  moduleServer(id, function(input, output, session) {
+    # Datasets are the only case when you need to use :: in `box`.
+    # This issue should be solved in the next `box` release.
+    data <- rhino::rhinos
+
+    table$server("table", data = data)
+    chart$server("chart", data = data)
+  })
+}
+```
+
+に対して、次のテストコードを作成：
+
+📄 `tests/testthat/test-main.R`
+
+```r
+box::use(
+  shiny[testServer],
+  testthat[...],
+)
+box::use(
+  app/main[...],
+)
+
+test_that("`data` is available in the main server function", {
+  testServer(server, {
+    expect_equal(dim(data), c(58, 3))
+  })
+})
+```
+
+⚡️テストを実行
+
+```r
+rhino::test_r()
+```
+
+このとき、`server` の定義中で変数 `data` にデータフレーム `rhino::rhinos` が格納されていることを反映し、テストが成功する。
+
+## E2Eテスト
+
+[`rhino::test_e2e()`](https://appsilon.github.io/rhino/reference/test_e2e.html) で
+Cypress による E2E テストを実行する。
 
 ---
 

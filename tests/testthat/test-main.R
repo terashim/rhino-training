@@ -6,8 +6,8 @@ box::use(
   app/main[...],
 )
 
-test_that("main server works", {
+test_that("`data` is available in the main server function", {
   testServer(server, {
-    # expect_equal(output$message, "Hello!")
+    expect_equal(dim(data), c(58, 3))
   })
 })

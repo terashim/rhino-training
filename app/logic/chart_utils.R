@@ -6,7 +6,7 @@ box::use(
 
 #' @export
 label_formatter <- JS(
-  "function(value, index){
+  "function(value, index) {
     return value;
   }"
 )

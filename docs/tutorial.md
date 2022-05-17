@@ -210,7 +210,7 @@ library(htmlwidgets)
 
 `rsconnect` でデプロイするとき、使用するパッケージを `packrat` に教えるためこのようにしている。`.renvignore` の設定により、`renv` もこのファイルを見て対象パッケージを判定するようになっている。
 
-（感想：できれば DESCRIPTION ファイルと Explicit なスナップショット <https://rstudio.github.io/renv/articles/renv.html#explicit-snapshots> を使いたい）
+（感想：できれば DESCRIPTION ファイルと Explicit なスナップショット <https://rstudio.github.io/renv/articles/renv.html#explicit-snapshots> を使いたい。）
 
 ⚡️ バージョン固定のため `renv.lock` ファイルを更新する:
 
