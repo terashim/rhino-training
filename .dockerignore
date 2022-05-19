@@ -1,0 +1,13 @@
+.devcontainer
+.git
+.github
+.rhino
+.Rproj.user
+docs
+renv
+tests
+.lintr
+.gitignore
+.Renviron
+.Rprofile
+*.Rproj

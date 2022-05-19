@@ -14,7 +14,7 @@
 - [ ] golem との比較 [`golem.md`](./golem.md)
 - [ ] Sass/JSビルド設定の中身について
 - [ ] GitHub Actions による CI の設定について
-- [ ] Docker イメージをビルドする
+- [ ] Docker イメージのビルド [`docker.md`](./docker.md)
 - [ ] どこかにデプロイする
 - [ ] CD の検討
 
