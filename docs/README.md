@@ -11,11 +11,11 @@
 - [x] テストについて [`testing.md`](./testing.md)
 - [x] ドキュメンテーションについて [`documentation.md`](documentation.md)
 - [x] コードの linting と自動フォーマットについて [`lint-and-format.md`](lint-and-format.md)
-- [ ] golem との比較 [`golem.md`](./golem.md)
+- [x] golem との比較 [`golem.md`](./golem.md)
 - [ ] Sass/JSビルド設定の中身について
 - [ ] GitHub Actions による CI の設定について
-- [ ] Docker イメージのビルド [`docker.md`](./docker.md)
-- [ ] どこかにデプロイする
+- [x] Docker イメージのビルド [`docker.md`](./docker.md)
+- [x] Cloud Run へのデプロイ [`cloud-run.md`](./cloud-run.md)
 - [ ] CD の検討
 
 ---

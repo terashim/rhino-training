@@ -37,5 +37,7 @@ server <- function(id) {
 
     table$server("table", data = data)
     chart$server("chart", data = data)
+
+    session$allowReconnect("force")
   })
 }
