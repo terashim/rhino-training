@@ -2,6 +2,8 @@ ARG R_VERSION="4.2.0"
 FROM rocker/r-ver:${R_VERSION} AS base
 
 # install apt packages
+RUN rm -f /etc/apt/apt.conf.d/docker-clean \
+  && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
 RUN \
   --mount=type=cache,target=/var/lib/apt/lists \
   --mount=type=cache,target=/var/cache/apt/archives \
@@ -14,27 +16,19 @@ RUN \
 
 # install renv
 ARG RENV_VERSION="0.15.4"
-RUN \
-  --mount=type=bind,source=docker/install-renv.R,target=/install-renv.R \
-  Rscript /install-renv.R $RENV_VERSION
-
-# install R packages using renv
-RUN mkdir /rhino
-WORKDIR /rhino
-RUN \
-  --mount=type=bind,source=renv.lock,target=/rhino/renv.lock \
-  --mount=type=cache,target=/root/.cache \
-  Rscript -e "renv::restore()"
+COPY docker/install-renv.R /install-renv.R
+RUN Rscript /install-renv.R $RENV_VERSION
 
 FROM base AS builder
 
-# install Node.js and yarn
+WORKDIR /workspace
+
+# install apt packages
 RUN \
   --mount=type=cache,target=/var/lib/apt/lists \
   --mount=type=cache,target=/var/cache/apt/archives \
   apt-get update \
   && apt-get install -y --no-install-recommends \
-    fonts-ipaexfont \
     curl \
     gnupg2 \
   && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor > /usr/share/keyrings/yarn-archive-keyring.gpg \
@@ -43,24 +37,28 @@ RUN \
   && apt-get update \
   && apt-get -y install --no-install-recommends yarn nodejs
 
+# install R packages using renv
+COPY renv.lock /workspace/renv.lock
+RUN \
+  --mount=type=cache,target=/root/.cache \
+  Rscript -e "renv::restore(library = '/usr/local/lib/R/site-library')"
+
 # build Sass and JS
-COPY config.yml rhino.yml /rhino/
-
-COPY app/styles /rhino/app/styles
+COPY config.yml rhino.yml /workspace/
+COPY app/styles /workspace/app/styles
 RUN \
   --mount=type=cache,target=/usr/local/share/.cache \
-  --mount=type=cache,target=/rhino/.rhino \
   Rscript -e "rhino::build_sass()"
-
-COPY app/js /rhino/app/js
+COPY app/js /workspace/app/js
 RUN \
   --mount=type=cache,target=/usr/local/share/.cache \
-  --mount=type=cache,target=/rhino/.rhino \
   Rscript -e "rhino::build_js()"
 
 FROM base
 
-COPY --from=builder /rhino/app/static /rhino/app/static
+WORKDIR /rhino
+COPY --from=builder /usr/local/lib/R/site-library /usr/local/lib/R/site-library
+COPY --from=builder /workspace/app/static /rhino/app/static
 COPY app.R config.yml rhino.yml /rhino/
 COPY app/view /rhino/app/view
 COPY app/logic /rhino/app/logic
