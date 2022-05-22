@@ -15,6 +15,15 @@ npm でいう [devDependencies](https://docs.npmjs.com/specifying-dependencies-a
 golem では開発用パッケージを Suggests に変更する作業が進められている（<https://github.com/ThinkR-open/golem/issues/597>）。
 いまのところ Rhino でそのような動きは見られない。
 
+### マルチステージビルドとキャッシュによる高速化
+
+[`Dockerfile`](../Dockerfile) の中で
+
+* マルチステージビルドを使って本番環境では不要なファイルを最終イメージから除外する
+* BuildKit の `--mount=type=cache` を使って renv のキャッシュをマウントし、ビルドを高速化する
+
+の２点を検証中。
+
 ---
 
 - [🏠 プロジェクトルートへ](https://github.com/terashim/rhino-training)
