@@ -15,14 +15,25 @@ npm でいう [devDependencies](https://docs.npmjs.com/specifying-dependencies-a
 golem では開発用パッケージを Suggests に変更する作業が進められている（<https://github.com/ThinkR-open/golem/issues/597>）。
 いまのところ Rhino でそのような動きは見られない。
 
-### マルチステージビルドとキャッシュによる高速化
+### マルチステージビルド
 
-[`Dockerfile`](../Dockerfile) の中で
+マルチステージビルドを利用することで、本番環境では不要な
+`app/js/`、`app/styles/`、`.rhino/`
+などのファイルを最終イメージから除外した。
 
-* マルチステージビルドを使って本番環境では不要なファイルを最終イメージから除外する
-* BuildKit の `--mount=type=cache` を使って renv のキャッシュをマウントし、ビルドを高速化する
+### `RUN --mount=type=cache` による高速化
 
-の２点を検証中。
+BuildKit の
+[`RUN --mount=type=cache`](https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/syntax.md#run---mounttypecache)
+を利用することによって、APT、renv、yarn のパッケージインストールでキャッシュが効くようになった。
+
+例えば renv では次のように `/root/.cache` フォルダをマウントしている。
+
+```dockerfile
+RUN \
+  --mount=type=cache,target=/root/.cache \
+  Rscript -e "renv::restore(library = '/usr/local/lib/R/site-library')"
+```
 
 ---
 

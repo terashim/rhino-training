@@ -48,10 +48,12 @@ COPY config.yml rhino.yml /workspace/
 COPY app/styles /workspace/app/styles
 RUN \
   --mount=type=cache,target=/usr/local/share/.cache \
+  --mount=type=cache,target=/workspace/.rhino \
   Rscript -e "rhino::build_sass()"
 COPY app/js /workspace/app/js
 RUN \
   --mount=type=cache,target=/usr/local/share/.cache \
+  --mount=type=cache,target=/workspace/.rhino \
   Rscript -e "rhino::build_js()"
 
 FROM base
